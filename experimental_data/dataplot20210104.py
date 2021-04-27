@@ -7,6 +7,7 @@ from matplotlib.pylab import close
 import matplotlib.pyplot as plt
 from sympy import *
 #Input Sections
+which = input('Which kind of data file are you choosing? csv or dat format?: ')
 File = input('What is the name of your experimental data file?: ')
 xaxisdata = input('Which Columns do you want to use for x axis to this Data plotting?')
 yaxisdata = input('Which Columns do you want to use for y axis to this Data plotting?')
@@ -17,7 +18,12 @@ Ylabel = input('What is the label of y axis?: ')
 #Importing basic data from a CSV-style experimental data file
 xaxisdata = int(xaxisdata)
 yaxisdata = int(yaxisdata)
-df = pd.read_csv(File)
+
+if (which == 'csv'):
+  df = pd.read_csv(File)
+elif (which == 'dat'):
+  df = pd.read_csv(File, sep='\s+')
+
 df = df[df > 0]
 num = len(df)
 Xstd = df[df.columns[xaxisdata]].std()
@@ -29,7 +35,7 @@ err_df1 =  DataFrame(Ystd/np.sqrt(num - 1), index=range(num), columns=[df.column
 
 #Preparing Plotting Figure & Environment
 fig, axes = plt.subplots(constrained_layout = True, facecolor = 'white')
-axes.axis([df[df.columns[xaxisdata]].min() - 40, df[df.columns[xaxisdata]].max() + 40, df[df.columns[yaxisdata]].min() - 3, df[df.columns[yaxisdata]].max() + 3])
+axes.axis([df[df.columns[xaxisdata]].min() - 40, df[df.columns[xaxisdata]].max() + 40, df[df.columns[yaxisdata]].min() - 1, df[df.columns[yaxisdata]].max() + 1])
 
 #Creating Scatter Graph of Experimental Data
 df.plot(kind='scatter', x=df.columns[xaxisdata], y=df.columns[yaxisdata], xerr=err_df0, yerr=err_df1, ax=axes,label = 'Data Plotting')
@@ -71,3 +77,6 @@ plt.savefig("figure.svg", transparent=True)
 #Identification of the regression line
 x = symbols('x')
 eq = l * x + k
+
+df['Cathode'].hist(bins = 100); # 基数の数を1000個にする  
+plt.savefig("Cathode_histgram.png")
